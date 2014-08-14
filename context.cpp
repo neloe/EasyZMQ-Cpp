@@ -6,7 +6,7 @@
 
 #include "context.h"
 
-namespace cppzmq
+namespace zmqcpp
 {
   std::shared_ptr<zmq::context_t> Context::m_ctx = nullptr;
   
