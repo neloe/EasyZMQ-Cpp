@@ -58,4 +58,5 @@ namespace zmqcpp
       throw no_endpt();
     return *m_sock;
   }
+
 }

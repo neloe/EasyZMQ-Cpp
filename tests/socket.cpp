@@ -12,6 +12,8 @@
 
 const char BIND[] = "tcp://*:5555";
 const char CONN[] = "tcp://localhost:5555";
+const char BIND2[] = "tcp://*:5556";
+const char CONN2[] = "tcp://localhost:5556";
 
 TEST(SocketTest, CreateFragileAndSend)
 {
@@ -20,8 +22,8 @@ TEST(SocketTest, CreateFragileAndSend)
   zmqcpp::Socket send(ZMQ_REQ);
   zmqcpp::Socket recv(ZMQ_REP);
   
-  send.bind(BIND, false);
-  recv.connect(CONN, false);
+  send.bind(BIND2, false);
+  recv.connect(CONN2, false);
   
   const std::string DATA = "Hi world!";
   std::string rep;

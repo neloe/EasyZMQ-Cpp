@@ -32,6 +32,7 @@ namespace zmqcpp
       bool m_fragile;
       std::shared_ptr<zmq::socket_t> m_sock;
       int m_type;
+      
     public:
       Socket(const int type): m_fragile(false), m_sock(nullptr), m_type(type) {}
       ~Socket() {m_sock=nullptr;}
@@ -39,6 +40,9 @@ namespace zmqcpp
       void connect(const std::string& endpt, const bool persist = true){connect(endpt.c_str(), persist);}
       void bind(const char* endpt, const bool persist = true);
       void bind(const std::string& endpt, const bool persist = true) {bind(endpt.c_str(), persist);}
+      
+      //template <class T>
+      //bool send(const BaseMessage<T> & msg, const int opts = 0) {return msg.send(*this, opts);}
       
       zmq::socket_t& raw_sock();
   };

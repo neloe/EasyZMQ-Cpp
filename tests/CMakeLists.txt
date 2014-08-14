@@ -16,6 +16,7 @@ include_directories(..)
 #add files with new test here
 set (test_sources
 socket.cpp
+message.cpp
 )
 
 add_executable(zmqtests ${test_sources})
