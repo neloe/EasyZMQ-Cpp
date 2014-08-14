@@ -16,7 +16,7 @@ namespace zmqcpp
     private:
       // Singleton member variable, to vastly simplify how much gets passed around
       static std::shared_ptr<zmq::context_t> m_ctx;
-      static zmq::context_t* init(const unsigned int numthreads = 1);
+      static zmq::context_t& init(const unsigned int numthreads = 1);
     public:
       Context(const unsigned int numthreads = 1);
       static zmq::context_t& get();

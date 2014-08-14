@@ -5,11 +5,10 @@
  */
 
 #include "context.h"
+#include "socket.h"
 
 namespace zmqcpp
-{
-  std::shared_ptr<zmq::context_t> Context::m_ctx = nullptr;
-  
+{  
   Context::Context(const unsigned int numthreads)
   {
     init(numthreads);
@@ -18,11 +17,11 @@ namespace zmqcpp
   zmq::context_t& Context::init(const unsigned int numthreads)
   {
     if (!m_ctx)
-      m_ctx = std::make_shared<zmq::context_t>(zmq::context_t(numthreads));
+      m_ctx = std::shared_ptr<zmq::context_t>(new zmq::context_t(numthreads));//, _del);
     return *m_ctx;
   }
   
-  static zmq::context_t& Context::get()
+  zmq::context_t& Context::get()
   {
     return init();
   }
