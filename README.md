@@ -39,7 +39,7 @@ zmqcpp::Context c;
 c.get();
 // or
 zmqcpp::Context::get();
-
+```
 ### Using sockets
 All communication through sockets must happen through the `zmqcpp::BaseMessage<T>` interface.  One basic message type is defined: `zmqcpp::Message`.  Messages can be created using the templated constructor; if the << operator is overloaded to allow insertion into a stringstream, and the resulting string is the correct format, the Message constructor will work just fine.
 ```c++
