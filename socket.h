@@ -136,7 +136,7 @@ namespace zmqcpp
        * 
        * Specialized for std::string
        */
-      template <class T> friend Socket& operator << (Socket & sock, const BaseMessage<T>& data);
+      template <class T> friend Socket& operator << (Socket & sock, BaseMessage<T>& data);
       //template <class T> friend Socket& operator << (Socket & sock, const T& data);
       ///@}
       ///@{
@@ -194,7 +194,7 @@ namespace zmqcpp
   }
 */  
   template <class T>
-  Socket & operator << (Socket & sock, const BaseMessage<T>& data)
+  Socket & operator << (Socket & sock, BaseMessage<T>& data)
   {
     sock.send(data);
     return sock;

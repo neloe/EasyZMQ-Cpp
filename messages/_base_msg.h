@@ -66,7 +66,7 @@ namespace zmqcpp
        * \pre None
        * \post the string or sequence of bytes is added to the frames to send
        */
-      void add_frame(const std::string & s) {m_frames.push_back(std::make_shared<std::string>(s));}
+      void add_frame(const std::string & s) {m_frames.push_back(std::shared_ptr<std::string>(new std::string(s)));}
       void add_frame(const char* bytes, const int size = -1) {add_frame(std::string(bytes, (size == -1?strlen(bytes) : size)));}
       ///@}
       /*!
