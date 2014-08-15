@@ -38,13 +38,6 @@ namespace zmqcpp
       int m_type;
       
       /*!
-       * \brief sends the data in the string pointed to using zero copy methods
-       * \pre None
-       * \post The string pointed to is sent over the socket
-       */
-      void _snd_strptr(const std::shared_ptr<std::string> s);
-      
-      /*!
        * \brief the "zero-copy" deleter; the smart pointers will deal with that for us
        * \pre None
        * \post None
@@ -184,15 +177,7 @@ namespace zmqcpp
     //msg.unprep_frames();
     return win;
   }
-/*  
-  template <class T>
-  Socket& operator << (Socket & sock, const T& data)
-  {
-    std::stringstream ss;
-    ss << data;
-    return sock << ss.str();
-  }
-*/  
+  
   template <class T>
   Socket & operator << (Socket & sock, BaseMessage<T>& data)
   {
@@ -212,19 +197,9 @@ namespace zmqcpp
       win &= raw_sock().recv(&z_msg, opts);
       msg.add_frame((char*)z_msg.data(), z_msg.size());
     } while (msg.recv_more());
+    return win;
   }
-/*  
-  template <class T>
-  Socket& operator >> (Socket & sock, T& data)
-  {
-    std::string str;
-    sock >> str;
-    std::stringstream ss;
-    ss << str;
-    ss >> data;
-    return sock;
-  }
-  */
+
   template <class T>
   Socket & operator >> (Socket & sock, BaseMessage<T>& data)
   {
