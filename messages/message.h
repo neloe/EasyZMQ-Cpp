@@ -12,6 +12,7 @@ namespace zmqcpp
   class Message: public BaseMessage<Message>
   {
     public:
-      bool send(zmqcpp::Socket & sock, const int opts = 0) {return _gen_send(sock, opts);}
+      std::list <std::shared_ptr<std::string>> & prep_frames() {return m_frames;}
+      void unprep_frames() {}
   };
 }

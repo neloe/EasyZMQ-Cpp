@@ -27,7 +27,7 @@ TEST(MessageTest, CreateAndSend)
   mesg.add_frame(DATA);
   std::string rep;
   
-  mesg.send(send);
+  send.send(mesg);
   
   zmq::message_t req;
   recv.raw_sock().recv(&req);
