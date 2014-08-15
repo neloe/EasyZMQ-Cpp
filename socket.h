@@ -9,6 +9,7 @@
 #include <exception>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <zmq.hpp>
 #include "messages/_base_msg.h"
@@ -98,7 +99,7 @@ namespace zmqcpp
        * \returns Whether the send was successful or not (as per the ZMQ C++ api)
        */
       template <class T>
-      bool send(BaseMessage<T> & msg, const int opts = 0);
+      bool send(const BaseMessage<T> & msg, const int opts = 0);
       
       /*!
        * \brief recv's the message over the socket with the specified options
@@ -120,10 +121,48 @@ namespace zmqcpp
        * I take no responsibility if use of this function kills your goldfish
        */
       zmq::socket_t& raw_sock();
+      
+      ///@{
+      /*!
+       * \brief A templated send operator
+       * \pre if T != std::string, type T must have the << operator overloaded (into a stringstream)
+       * \pre the string representation from stringstream << T must be the representation to send
+       * \pre the socket type must allow send
+       * \post Sends a single frame with the text over the socket
+       * \throws zmq::error_t
+       * \returns the socket
+       * 
+       * \note This function hides the return value of socket.send() (for now)
+       * 
+       * Specialized for std::string
+       */
+      template <class T> friend Socket& operator << (Socket & sock, BaseMessage<T>& data);
+      //template <class T> friend Socket& operator << (Socket & sock, const T& data);
+      ///@}
+      ///@{
+      /*!
+       * \brief A templated recv operator
+       * \pre if T != std::string, type T must have the >> operator overloaded (into a stringstream)
+       * \pre the string representation from stringstream >> T must be the representation to receive
+       * \pre the socket type must allow recv
+       * \post Sends a single frame with the text over the socket
+       * \throws zmq::error_t
+       * \returns the socket
+       * 
+       * \note This function has the same downfalls as the normal >> operator; if types don't match, behavior will be unexpected
+       * You should always know the type of data you are pulling in
+       * 
+       * \note This function hides the return value of socket.recv() (for now)
+       * 
+       * Specialized for std::string
+       */
+      template <class T> friend Socket& operator >> (Socket & sock, BaseMessage<T>& data);
+      //template <class T> friend Socket& operator >> (Socket & sock, const T& data);
+      ///@}
   };
   
   template <class T>
-  bool Socket::send(BaseMessage<T> & msg, const int opts)
+  bool Socket::send(const BaseMessage<T> & msg, const int opts)
   {
     int count = 1;
     bool win = true;
@@ -142,8 +181,23 @@ namespace zmqcpp
     //now send the last frame without enforcing the SNDMORE flag
     z_msg.rebuild((void*)frames.back()->c_str(), frames.back()->size(), strp_free);
     win &= raw_sock().send(z_msg, opts);
-    msg.unprep_frames();
+    //msg.unprep_frames();
     return win;
+  }
+/*  
+  template <class T>
+  Socket& operator << (Socket & sock, const T& data)
+  {
+    std::stringstream ss;
+    ss << data;
+    return sock << ss.str();
+  }
+*/  
+  template <class T>
+  Socket & operator << (Socket & sock, BaseMessage<T>& data)
+  {
+    sock.send(data);
+    return sock;
   }
   
   template <class T>
@@ -158,5 +212,23 @@ namespace zmqcpp
       win &= raw_sock().recv(&z_msg, opts);
       msg.add_frame((char*)z_msg.data(), z_msg.size());
     } while (msg.recv_more());
+  }
+/*  
+  template <class T>
+  Socket& operator >> (Socket & sock, T& data)
+  {
+    std::string str;
+    sock >> str;
+    std::stringstream ss;
+    ss << str;
+    ss >> data;
+    return sock;
+  }
+  */
+  template <class T>
+  Socket & operator >> (Socket & sock, BaseMessage<T>& data)
+  {
+    sock.recv(data);
+    return sock;
   }
 }

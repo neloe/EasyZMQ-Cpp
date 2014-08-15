@@ -6,6 +6,7 @@
 
 #include "socket.h"
 #include "context.h"
+#include "messages/message.h"
 
 namespace zmqcpp
 {
@@ -57,5 +58,24 @@ namespace zmqcpp
       throw no_endpt();
     return *m_sock;
   }
-
+ 
+ /*
+  template<>
+  Socket& operator << <std::string>(Socket & sock, const std::string& data)
+  {
+    Message m;
+    m.add_frame(data);
+    sock << m;
+    return sock;
+  }
+  
+  template<>
+  Socket& operator >> <std::string>(Socket & sock, std::string& data)
+  {
+    Message m;
+    sock >> m;
+    data = *(m.frames().back());
+    return sock;
+  }
+*/
 }

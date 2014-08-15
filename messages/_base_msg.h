@@ -21,7 +21,7 @@ namespace zmqcpp
       friend class Socket; 
       std::list <std::shared_ptr<std::string>> m_frames;
       bool m_rstart;
-      
+      ///@{
       /*!
        * \brief The magic behind the barton-nackman trick
        * \pre None
@@ -29,7 +29,8 @@ namespace zmqcpp
        * \returns this object as it's child class
        */
       T& as_child() {return static_cast<T&> (*this);}
-      
+      const T& as_child() const {return static_cast<const T&> (*this);}
+      ///@}
       // ------- Protected functions under this line MUST be implemented in child classes
       /*!
        * \brief prepares the frames to be sent
@@ -37,7 +38,7 @@ namespace zmqcpp
        * \post Calls the child's prep_frames function
        * \returns the prepared frames to send
        */
-      std::list <std::shared_ptr<std::string>> & prep_frames() {return as_child().prep_frames();}
+      const std::list <std::shared_ptr<std::string>> prep_frames() const {return as_child().prep_frames();}
       /*!
        * \brief cleans up after sending the frames
        * \pre The child class has the unprep_frames() function implemented
@@ -65,7 +66,7 @@ namespace zmqcpp
        * \pre None
        * \post the string or sequence of bytes is added to the frames to send
        */
-      void add_frame(const std::string & s) {m_frames.push_back(std::make_shared<std::string>(s));}
+      void add_frame(const std::string & s) {m_frames.push_back(std::shared_ptr<std::string>(new std::string(s)));}
       void add_frame(const char* bytes, const int size = -1) {add_frame(std::string(bytes, (size == -1?strlen(bytes) : size)));}
       ///@}
       /*!
