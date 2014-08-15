@@ -14,10 +14,10 @@
 const char BIND[] = "tcp://*:5556";
 const char CONN[] = "tcp://localhost:5556";
 
-TEST(MessageTest, CreateAndSend)
+TEST(MessageTest, Send)
 {
-  zmqcpp::Socket send(ZMQ_REQ);
-  zmqcpp::Socket recv(ZMQ_REP);
+  zmqcpp::Socket send(ZMQ_PUSH);
+  zmqcpp::Socket recv(ZMQ_PULL);
   
   send.bind(BIND);
   recv.connect(CONN);
@@ -27,22 +27,30 @@ TEST(MessageTest, CreateAndSend)
   mesg.add_frame(DATA);
   std::string rep;
   
-  send.send(mesg);
+  ASSERT_TRUE(send.send(mesg));
   
   zmq::message_t req;
   recv.raw_sock().recv(&req);
   rep = std::string((char*)req.data(), req.size());
   
-  ASSERT_EQ(DATA, rep);
-  
-  req.rebuild(static_cast<int>(rep.size()));
-  memcpy((void*)req.data(), rep.c_str(), rep.size());
-  recv.raw_sock().send(req);
-  
-  zmq::message_t final;
-  send.raw_sock().recv(&final);
-  std::string finstr((char*)final.data(), final.size());
-  
-  ASSERT_EQ(DATA, finstr);
-  
+  ASSERT_EQ(DATA, rep);  
 }
+
+TEST(MessageTest, Recv)
+{
+  zmqcpp::Socket send(ZMQ_PUSH);
+  zmqcpp::Socket recv(ZMQ_PULL);
+  
+  send.bind(BIND);
+  recv.connect(CONN);
+  
+  const std::string DATA = "Hi world!";
+  zmqcpp::Message mesg, recvd;
+  mesg.add_frame(DATA);
+  std::string rep;
+  
+  ASSERT_TRUE(send.send(mesg));
+  ASSERT_TRUE(recv.recv(recvd));
+  ASSERT_EQ(DATA, *(recvd.frames().front()));  
+}
+

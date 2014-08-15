@@ -11,8 +11,11 @@ namespace zmqcpp
 {
   class Message: public BaseMessage<Message>
   {
-    public:
+    friend class BaseMessage<Message>;
+    protected:
       std::list <std::shared_ptr<std::string>> & prep_frames() {return m_frames;}
       void unprep_frames() {}
+      void start_recv() {}
+      bool recv_more() {return false;}
   };
 }

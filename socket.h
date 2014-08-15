@@ -48,6 +48,9 @@ namespace zmqcpp
       template <class T>
       bool send(BaseMessage<T> & msg, const int opts = 0);
       
+      template <class T>
+      bool recv(BaseMessage<T> & msg, const int opts = 0);
+      
       zmq::socket_t& raw_sock();
   };
   
@@ -74,6 +77,18 @@ namespace zmqcpp
     msg.unprep_frames();
     return win;
   }
+  
+  template <class T>
+  bool Socket::recv(BaseMessage<T> & msg, const int opts)
+  {
+    bool win = true;
+    static zmq::message_t z_msg;
+    msg.start_recv();
+    do
+    {
+      z_msg.rebuild();
+      win &= raw_sock().recv(&z_msg, opts);
+      msg.add_frame((char*)z_msg.data(), z_msg.size());
+    } while (msg.recv_more());
+  }
 }
-
-#include "socket.hpp"
