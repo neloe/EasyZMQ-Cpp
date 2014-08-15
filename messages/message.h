@@ -25,13 +25,13 @@ namespace zmqcpp
        * \pre None
        * \post None
        */
-      void unprep_frames() {return }
+      void unprep_frames() {return;}
       /*!
        * \brief Prepares to receive
        * \pre None
        * \post None
        */
-      void start_recv() {}
+      void start_recv() {return;}
       /*!
        * \brief Determines whether or not more frames should be received
        * \pre None
