@@ -11,8 +11,8 @@
 #include <string>
 #include <zmq.hpp>
 
-const char BIND[] = "tcp://*:5556";
-const char CONN[] = "tcp://localhost:5556";
+const char BIND[] = "tcp://*:5558";
+const char CONN[] = "tcp://localhost:5558";
 
 TEST(HelperTest, SendRecv)
 {
