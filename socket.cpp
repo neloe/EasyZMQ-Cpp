@@ -27,7 +27,6 @@ namespace zmqcpp
       if (m_conn.count(ep) == 0)
       {
 	m_conn[ep] = std::make_shared<zmq::socket_t>(zmq::socket_t(Context::get(), m_type));
-	//m_conn[ep] = std::shared_ptr<zmq::socket_t>(new zmq::socket_t(Context::get(), m_type), [] (zmq::socket_t* p) {p -> close(); delete p;});
 	m_conn[ep]->connect(endpt);
       }
       m_sock = m_conn[ep];
