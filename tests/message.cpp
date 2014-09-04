@@ -4,9 +4,7 @@
  * \brief tests find and findOne functionality of the mongo cxx driver
  */
 
-#include "../socket.h"
-#include "../context.h"
-#include "../messages/message.h"
+#include "../zmqcpp.h"
 #include "gtest/gtest.h"
 #include <string>
 #include <zmq.hpp>
