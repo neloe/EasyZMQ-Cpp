@@ -37,12 +37,14 @@ namespace zmqcpp
       // Type of the socket
       int m_type;
       
+      static std::map<void*, std::shared_ptr<std::string>> m_unsent;
+      
       /*!
        * \brief the "zero-copy" deleter; the smart pointers will deal with that for us
        * \pre None
        * \post None
        */
-      static void strp_free(void*, void*) {return;}
+      static void strp_free(void* ptr, void* _) {m_unsent.erase(ptr);}
       
     public:
       /*!
@@ -167,12 +169,14 @@ namespace zmqcpp
       if (count < frames.size())
       {
 	z_msg.rebuild((void*)s->c_str(), s->size(), strp_free);
+	m_unsent[z_msg.data()] = s;
 	win &= raw_sock().send(z_msg, opts & ZMQ_SNDMORE);
 	count ++;
       }
     }
     //now send the last frame without enforcing the SNDMORE flag
     z_msg.rebuild((void*)frames.back()->c_str(), frames.back()->size(), strp_free);
+    m_unsent[z_msg.data()] = frames.back();
     win &= raw_sock().send(z_msg, opts);
     //msg.unprep_frames();
     return win;
