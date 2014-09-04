@@ -24,8 +24,7 @@ TEST(HelperTest, SendRecv)
   send.bind(BIND);
   recv.connect(CONN);
   
-  zmqcpp::Message m2(VAL);
-  send << m2;
+  send << zmqcpp::Message(VAL);
   recv >> m;
   ASSERT_EQ(STRVAL, *(m.frames().back()));
 }
