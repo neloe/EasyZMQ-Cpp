@@ -15,6 +15,8 @@ target_link_libraries(zmqcpp zmq)
 
 add_subdirectory(tests)
 
+if (CMAKE_BUILD_TYPE MATCHES Debug)
 include(CodeCoverage)
 setup_target_for_coverage(${PROJECT_NAME}_coverage zmqtests coverage)
 setup_target_for_coverage_cobertura(${PROJECT_NAME}_cobertura zmqtests coverage --gtest_output=xml:coverage.junit.xml)
+endif()

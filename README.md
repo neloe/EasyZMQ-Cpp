@@ -59,6 +59,8 @@ std::string last_recvd;
 sendsock.send(m1);
 recvsock.recv(rec);
 last_recvd = *(rec.frames().back()); // contains the last frame received, last_recvd == "1"
+//can also use:
+last_recvd = rec.last();
 ```
 Or
 ```c++
@@ -66,7 +68,7 @@ sendsock << m3;
 recvsock >> rec;
 cout << *(rec.frames().back()) << endl; // prints "hello" to the screen
 revsock >> rec; // rec's frame list now contains "1", "hello", "world"
-cout << *(rec.frames().back()) << endl; // prints "world" to the screen
+cout << rec.last() << endl; // prints "world" to the screen, does the same as above
 ```
-Note that the message MUST be created before sending; the way ZMQ does its sends makes it so it tries to access memory that is already freed if you use a temporary object (e.g. `sendsock << zmqcpp::Message(4)`).
+This now works: `sendsock << zmqcpp::Message(4)`. 
 More complex message types can be created by inheriting from the base message type; these messages can handle special protocol messages, etc.

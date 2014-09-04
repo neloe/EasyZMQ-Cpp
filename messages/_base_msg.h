@@ -59,6 +59,7 @@ namespace zmqcpp
        * \returns Whether or not to return more (result of child's recv_more function)
        */
       bool recv_more() {bool more = as_child().recv_more(); m_rstart = false; return more;}
+
     public:
       ///@{
       /*!
@@ -84,5 +85,20 @@ namespace zmqcpp
        * \returns the list of frames
        */
       const std::list<std::shared_ptr<std::string>> frames() const {return m_frames;}
+            
+      /*!
+       * \brief returns the last string in the message list
+       * \pre None
+       * \post None
+       * \returns Last message if >=1 frame, else empty string
+       */
+      std::string last() {return (m_frames.size())? *(m_frames.back()): "";}
+      
+      /*!
+       * \brief empties the frame list
+       * \pre None
+       * \post the frame list is made cleared 
+       */
+      void clear() {m_frames.clear();}
   };
 }

@@ -1,6 +1,6 @@
 /*!
  * \file message.h
- * \author Nathan ELoe
+ * \author Nathan Eloe
  * \brief A basic message class
  */
 #pragma once
@@ -34,7 +34,7 @@ namespace zmqcpp
        * \post None
        * \returns the prepared frames to send
        */
-      std::list <std::shared_ptr<std::string>> prep_frames() const {return m_frames;}
+      const std::list <std::shared_ptr<std::string>> prep_frames() const {return m_frames;}
       /*!
        * \brief cleans up after sending the frames
        * \pre None

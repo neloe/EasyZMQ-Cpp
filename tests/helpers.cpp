@@ -4,9 +4,7 @@
  * \brief tests find and findOne functionality of the mongo cxx driver
  */
 
-#include "../socket.h"
-#include "../context.h"
-#include "../messages/message.h"
+#include "../zmqcpp.h"
 #include "gtest/gtest.h"
 #include <string>
 #include <zmq.hpp>
@@ -26,8 +24,7 @@ TEST(HelperTest, SendRecv)
   send.bind(BIND);
   recv.connect(CONN);
   
-  zmqcpp::Message m2(VAL);
-  send << m2;
+  send << zmqcpp::Message(VAL);
   recv >> m;
   ASSERT_EQ(STRVAL, *(m.frames().back()));
 }

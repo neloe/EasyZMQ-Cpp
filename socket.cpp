@@ -13,6 +13,7 @@ namespace zmqcpp
   std::shared_ptr<zmq::context_t> Context::m_ctx = nullptr;
   thread_local std::map<std::string, std::shared_ptr<zmq::socket_t>> Socket::m_conn;
   std::map<std::string, std::shared_ptr<zmq::socket_t>> Socket::m_bind;
+  std::map<void*, std::shared_ptr<std::string>> Socket::m_unsent;
   
   void Socket::connect(const char* endpt, const bool persist)
   {
