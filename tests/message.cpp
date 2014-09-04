@@ -43,13 +43,15 @@ TEST(MessageTest, Recv)
   recv.connect(CONN);
   
   const std::string DATA = "Hi world!";
-  zmqcpp::Message mesg, recvd;
+  zmqcpp::Message mesg;
   mesg.add_frame(DATA);
   std::string rep;
   
   ASSERT_TRUE(send.send(mesg));
-  ASSERT_TRUE(recv.recv(recvd));
-  ASSERT_EQ(DATA, *(recvd.frames().front()));  
+  mesg.clear();
+  ASSERT_EQ(0, mesg.frames().size());
+  ASSERT_TRUE(recv.recv(mesg));
+  ASSERT_EQ(DATA, mesg.last());  
 }
 
 TEST(MessageTest, MultiPart)
@@ -71,6 +73,6 @@ TEST(MessageTest, MultiPart)
   ASSERT_TRUE(recv.recv(recvd));
   ASSERT_EQ(DATA, *(recvd.frames().back()));
   ASSERT_TRUE(recv.recv(recvd));
-  ASSERT_EQ(DATA2, *(recvd.frames().back()));
+  ASSERT_EQ(DATA2, recvd.last());
 }
 
