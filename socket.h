@@ -39,6 +39,12 @@ namespace zmqcpp
       const char* what() {return "Socket has no endpoint";}
   };
   
+  struct sockopt
+  {
+    std::shared_ptr<void> val;
+    size_t vsize;
+  };
+  
   class Socket
   {
     private:
@@ -46,6 +52,10 @@ namespace zmqcpp
       static thread_local std::map<std::string, std::shared_ptr<zmq::socket_t>> m_conn;
       // bound sockets are static (not thread_local)
       static std::map<std::string, std::shared_ptr<zmq::socket_t>> m_bind;
+      static std::map<std::string, std::map<int, sockopt>> m_optcache;
+      // local socket ops (for before connect)
+      std::map<int, sockopt> m_sockopts;
+      
       
       //Whether or not this is fragile.  Hopefully, always false
       bool m_fragile;
@@ -171,6 +181,13 @@ namespace zmqcpp
       template <class T> friend Socket& operator >> (Socket & sock, BaseMessage<T>& data);
       //template <class T> friend Socket& operator >> (Socket & sock, const T& data);
       ///@}
+      
+      /* socket options */
+      template <class T>
+      void setsockopt (const int name, const T& data)
+      {
+	m_sockopts[name] = {std::static_pointer_cast<void>(std::make_shared<T>(data)), sizeof(T)};
+      }
   };
   
   template <class T>

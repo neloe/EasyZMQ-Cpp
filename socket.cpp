@@ -31,13 +31,19 @@ namespace zmqcpp
   thread_local std::map<std::string, std::shared_ptr<zmq::socket_t>> Socket::m_conn;
   std::map<std::string, std::shared_ptr<zmq::socket_t>> Socket::m_bind;
   std::map<void*, std::shared_ptr<std::string>> Socket::m_unsent;
+  std::map<std::string, std::map<int, sockopt>> Socket::m_optcache;
   
   void Socket::connect(const char* endpt, const bool persist)
   {
     std::string ep(endpt);
+    m_optcache[endpt] = m_sockopts;
     if (!persist)
     {
       m_sock = std::make_shared<zmq::socket_t>(zmq::socket_t(Context::get(), m_type));
+      for (auto opt: m_sockopts)
+      {
+	m_sock -> setsockopt(opt.first, opt.second.val.get(), opt.second.vsize);
+      }
       m_sock->connect(endpt);
     }
     else
