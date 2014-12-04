@@ -36,6 +36,7 @@ namespace zmqcpp
   void Socket::connect(const char* endpt, const bool persist)
   {
     std::string ep(endpt);
+    curr_endpt = ep;
     m_optcache[endpt] = m_sockopts;
     if (!persist)
     {
@@ -60,6 +61,7 @@ namespace zmqcpp
   void Socket::bind(const char* endpt, const bool persist)
   {
     std::string ep(endpt);
+    curr_endpt = ep;
     if (!persist)
     {
       m_sock = std::make_shared<zmq::socket_t>(zmq::socket_t(Context::get(), m_type));

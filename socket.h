@@ -64,6 +64,8 @@ namespace zmqcpp
       // Type of the socket
       int m_type;
       
+      std::string curr_endpt;
+      
       static std::map<void*, std::shared_ptr<std::string>> m_unsent;
       
       /*!
@@ -182,12 +184,16 @@ namespace zmqcpp
       //template <class T> friend Socket& operator >> (Socket & sock, const T& data);
       ///@}
       
+      const std::string & endpt() const {return curr_endpt;}
+      
       /* socket options */
       template <class T>
       void setsockopt (const int name, const T& data)
       {
 	m_sockopts[name] = {std::static_pointer_cast<void>(std::make_shared<T>(data)), sizeof(T)};
       }
+      
+      
   };
   
   template <class T>
