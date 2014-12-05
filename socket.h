@@ -185,7 +185,8 @@ namespace zmqcpp
       ///@}
       
       const std::string & endpt() const {return curr_endpt;}
-      
+      //Socket will no longer work after destructor called
+      void disconnect() {m_conn.erase(curr_endpt);}
       /* socket options */
       template <class T>
       void setsockopt (const int name, const T& data)
