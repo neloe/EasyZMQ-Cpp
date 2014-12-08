@@ -36,7 +36,7 @@ namespace zmqcpp
   {
     protected:
       friend class Socket; 
-      std::list <std::shared_ptr<std::string>> m_frames;
+      mutable std::list <std::shared_ptr<std::string>> m_frames;
       bool m_rstart;
       ///@{
       /*!
@@ -55,13 +55,13 @@ namespace zmqcpp
        * \post Calls the child's prep_frames function
        * \returns the prepared frames to send
        */
-      const std::list <std::shared_ptr<std::string>> prep_frames() const {return as_child().prep_frames();}
+      const std::list <std::shared_ptr<std::string>> & prep_frames() const {return as_child().prep_frames();}
       /*!
        * \brief cleans up after sending the frames
        * \pre The child class has the unprep_frames() function implemented
        * \post Calls the child's prep_frames function
        */
-      void unprep_frames() {as_child().unprep_frames();}
+      void unprep_frames() const {as_child().unprep_frames();}
       
       /*!
        * \brief Resets the marker for the beginning of the receive functionality

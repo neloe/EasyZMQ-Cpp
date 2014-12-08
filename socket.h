@@ -219,7 +219,7 @@ namespace zmqcpp
     z_msg.rebuild((void*)frames.back()->c_str(), frames.back()->size(), strp_free);
     m_unsent[z_msg.data()] = frames.back();
     win &= raw_sock().send(z_msg, opts);
-    //msg.unprep_frames();
+    msg.unprep_frames();
     return win;
   }
   

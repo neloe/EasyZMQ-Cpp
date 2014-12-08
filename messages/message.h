@@ -51,13 +51,13 @@ namespace zmqcpp
        * \post None
        * \returns the prepared frames to send
        */
-      const std::list <std::shared_ptr<std::string>> prep_frames() const {return m_frames;}
+      const std::list <std::shared_ptr<std::string>> & prep_frames() const {return m_frames;}
       /*!
        * \brief cleans up after sending the frames
        * \pre None
        * \post None
        */
-      void unprep_frames() {return;}
+      void unprep_frames() const {return;}
       /*!
        * \brief Prepares to receive
        * \pre None
