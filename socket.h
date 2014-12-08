@@ -184,10 +184,25 @@ namespace zmqcpp
       //template <class T> friend Socket& operator >> (Socket & sock, const T& data);
       ///@}
       
+      /*!
+       * \brief returns the endpoint this socket is currently connected to (helpful in debugging)
+       * \pre None
+       * \post None
+       * \returns the string denoting the endpoint
+       */
       const std::string & endpt() const {return curr_endpt;}
-      //Socket will no longer work after destructor called
+      /*!
+       * \brief forces a full disconnect of this socket (next call to connect will create a new socket
+       * \pre None
+       * \post the socket is removed from the cache and will be created on next connect()
+       */
       void disconnect() {m_conn.erase(curr_endpt);}
       /* socket options */
+      /*!
+       * \brief sets a non-string sockopt (before connection)
+       * \pre name and data are allowable values from the ZMQ API Spec
+       * \post the sockopt is set to be set on next connect
+       */
       template <class T>
       void setsockopt (const int name, const T& data)
       {
@@ -237,7 +252,7 @@ namespace zmqcpp
     static zmq::message_t z_msg;
     msg.start_recv();
     int more;
-    size_t msize;
+    size_t msize = sizeof(more);
     do
     {
       z_msg.rebuild();

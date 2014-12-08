@@ -65,12 +65,11 @@ namespace zmqcpp
        */
       void start_recv() {return;}
       /*!
-       * \brief Determines whether or not more frames should be received
+       * \brief signifies the end of recv
        * \pre None
        * \post None
-       * \returns false (only one frame should be received)
        */
-      //bool recv_more() {return false;}
+      void end_recv() {}
   };
   
   template <class T>

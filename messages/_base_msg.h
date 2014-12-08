@@ -70,12 +70,11 @@ namespace zmqcpp
        */
       void start_recv() {m_rstart = true; as_child().start_recv();}
       /*!
-       * \brief Determines whether or not more frames should be received
-       * \pre The child class has the recv_more() function implemented
-       * \post calls the child's recv_more() function, sets the recv_start flag to false
-       * \returns Whether or not to return more (result of child's recv_more function)
+       * \brief Signals the recv is done, and the message can do any postprocessing
+       * \pre The child class has the end_recv() function implemented
+       * \post calls the child's end_recv() function
        */
-      //bool recv_more() {bool more = as_child().recv_more(); m_rstart = false; return more;}
+      void end_recv() {as_child().end_recv();}
 
     public:
       ///@{
