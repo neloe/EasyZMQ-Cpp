@@ -70,7 +70,7 @@ namespace zmqcpp
        * \post None
        * \returns false (only one frame should be received)
        */
-      bool recv_more() {return false;}
+      //bool recv_more() {return false;}
   };
   
   template <class T>

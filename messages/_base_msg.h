@@ -75,7 +75,7 @@ namespace zmqcpp
        * \post calls the child's recv_more() function, sets the recv_start flag to false
        * \returns Whether or not to return more (result of child's recv_more function)
        */
-      bool recv_more() {bool more = as_child().recv_more(); m_rstart = false; return more;}
+      //bool recv_more() {bool more = as_child().recv_more(); m_rstart = false; return more;}
 
     public:
       ///@{

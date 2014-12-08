@@ -88,8 +88,7 @@ TEST(MessageTest, MultiPart)
   
   ASSERT_TRUE(send.send(mesg));
   ASSERT_TRUE(recv.recv(recvd));
-  ASSERT_EQ(DATA, *(recvd.frames().back()));
-  ASSERT_TRUE(recv.recv(recvd));
+  ASSERT_EQ(DATA, *(recvd.frames().front()));
   ASSERT_EQ(DATA2, recvd.last());
 }
 

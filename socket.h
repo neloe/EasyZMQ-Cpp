@@ -211,7 +211,7 @@ namespace zmqcpp
       {
 	z_msg.rebuild((void*)s->c_str(), s->size(), strp_free);
 	m_unsent[z_msg.data()] = s;
-	win &= raw_sock().send(z_msg, opts & ZMQ_SNDMORE);
+	win &= raw_sock().send(z_msg, opts | ZMQ_SNDMORE);
 	count ++;
       }
     }
@@ -236,12 +236,15 @@ namespace zmqcpp
     bool win = true;
     static zmq::message_t z_msg;
     msg.start_recv();
+    int more;
+    size_t msize;
     do
     {
       z_msg.rebuild();
       win &= raw_sock().recv(&z_msg, opts);
       msg.add_frame((char*)z_msg.data(), z_msg.size());
-    } while (msg.recv_more());
+      raw_sock().getsockopt(ZMQ_RCVMORE, &more, &msize);
+    } while (more);
     return win;
   }
 
