@@ -30,16 +30,18 @@ const char BIND[] = "tcp://*:5555";
 const char CONN[] = "tcp://localhost:5555";
 const char BIND2[] = "tcp://*:5556";
 const char CONN2[] = "tcp://localhost:5556";
+const char BIND3[] = "tcp://*:5559";
+const char CONN3[] = "tcp://localhost:5559";
 
-TEST(SocketTest, CreateFragileAndSend)
+/*TEST(SocketTest, CreateFragileAndSend)
 {
   //Try creating the context here
   zmqcpp::Context c;
   zmqcpp::Socket send(ZMQ_REQ);
   zmqcpp::Socket recv(ZMQ_REP);
   
-  send.bind(BIND2, false);
-  recv.connect(CONN2, false);
+  send.bind(BIND2);
+  recv.connect(CONN2);
   
   const std::string DATA = "Hi world!";
   std::string rep;
@@ -64,7 +66,7 @@ TEST(SocketTest, CreateFragileAndSend)
   
   ASSERT_EQ(DATA, finstr);
   
-}
+}*/
 
 TEST(SocketTest, CreateAndSend)
 {
@@ -73,7 +75,8 @@ TEST(SocketTest, CreateAndSend)
   
   send.bind(BIND);
   recv.connect(CONN);
-  
+  send._bind();
+  recv._conn();
   const std::string DATA = "Hi world!";
   std::string rep;
   
@@ -112,5 +115,36 @@ TEST(SocketTest, NoEndPtThrow)
   {
     ASSERT_STREQ("Socket has no endpoint", e.what());
   }
+}
+
+TEST(SocketTest, MultiConn)
+{
+  zmqcpp::Socket b1(ZMQ_REQ), b2(ZMQ_REQ);
+  zmqcpp::Socket s1(ZMQ_REP);
+  char data[10];
+  b1.bind(BIND2);
+  b1._bind();
+  b2.bind(BIND3);
+  b2._bind();
+  s1.connect(CONN2);
+  s1.connect(CONN3);
+  s1._conn();
+  b1.raw_sock().send("Hi1", 3, 0);
+  b2.raw_sock().send("Hi2", 3, 0);
+  s1.raw_sock().recv(data, 10, 0);
+  ASSERT_STREQ("Hi1", data);
+  s1.raw_sock().send("W1", 2, 0);
+  s1.raw_sock().recv(data, 10, 0);
+  ASSERT_STREQ("Hi2", data);
+  s1.raw_sock().send("W2", 2, 0);
+  for (int i=0; i<10; i++)
+    data[i] = 0;
+  b1.raw_sock().recv(data, 10, 0);
+  ASSERT_STREQ("W1", data);
+  for (int i=0; i<10; i++)
+    data[i] = 0;
+  b2.raw_sock().recv(data, 10, 0);
+  ASSERT_STREQ("W2", data);
+  
 }
 

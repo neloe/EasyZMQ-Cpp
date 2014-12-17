@@ -40,7 +40,7 @@ TEST(HelperTest, SendRecv)
   
   send.bind(BIND);
   recv.connect(CONN);
-  
+  recv._conn();
   send << zmqcpp::Message(VAL);
   recv >> m;
   ASSERT_EQ(STRVAL, *(m.frames().back()));

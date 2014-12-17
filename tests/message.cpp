@@ -36,7 +36,7 @@ TEST(MessageTest, Send)
   
   send.bind(BIND);
   recv.connect(CONN);
-  
+  recv._conn();
   const std::string DATA = "Hi world!";
   zmqcpp::Message mesg;
   mesg.add_frame(DATA);

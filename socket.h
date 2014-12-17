@@ -49,21 +49,23 @@ namespace zmqcpp
   {
     private:
       // connected sockets are thread_local, but static by connection string
-      static thread_local std::map<std::string, std::shared_ptr<zmq::socket_t>> m_conn;
+      static thread_local std::map<size_t, std::shared_ptr<zmq::socket_t>> m_conn;
       // bound sockets are static (not thread_local)
-      static std::map<std::string, std::shared_ptr<zmq::socket_t>> m_bind;
+      static std::map<size_t, std::shared_ptr<zmq::socket_t>> m_bind;
       static std::map<std::string, std::map<int, sockopt>> m_optcache;
       // local socket ops (for before connect)
       std::map<int, sockopt> m_sockopts;
       
       
-      //Whether or not this is fragile.  Hopefully, always false
-      bool m_fragile;
+      //vector of endpoints: to enable multi-endpoint connections and binding
+      std::vector<std::string> m_conn_endpts;
+      std::vector<std::string> m_bind_endpts;
+      size_t m_conn_hash, m_bind_hash;
       // A shared pointer to the socket
       std::shared_ptr<zmq::socket_t> m_sock;
       // Type of the socket
       int m_type;
-      
+      bool m_connd, m_bound;
       std::string curr_endpt;
       
       static std::map<void*, std::shared_ptr<std::string>> m_unsent;
@@ -74,14 +76,30 @@ namespace zmqcpp
        * \post None
        */
       static void strp_free(void* ptr, void* _) {m_unsent.erase(ptr);}
+    
+    public:     
+      size_t hash_list(std::vector<std::string> & strvec);
       
-    public:
+      /*!
+       * \brief connects socket to all endpoints in the connection list
+       * \pre None
+       * \post A connection is established to all endpoitns in the connection list (if it hasn't been called before for this socket)
+       */
+      void _conn();
+      
+      /*!
+       * \brief binds socket to all endpoints in the connection list
+       * \pre None
+       * \post A binding is established to all endpoitns in the connection list
+       */
+      void _bind();
+
       /*!
        * \brief Constructor
        * \pre None
        * \post The socket is constructed with the specified socket type
        */
-      Socket(const int type): m_fragile(false), m_sock(nullptr), m_type(type) {}
+      Socket(const int type): m_sock(nullptr), m_type(type) {}
       /*!
        * \brief Destructor
        * \pre None
@@ -90,28 +108,35 @@ namespace zmqcpp
       ~Socket() {m_sock=nullptr;}
       ///@{
       /*!
-       * \brief connects the socket to the endpoint
+       * \brief adds an endpoint to the connection list
        * \pre None
-       * \post Connects a socket to the endpoint if needed (!persist and no connection to endpt previously)
+       * \post pushes endpt to the back of the connection list
+       * \post sets the current_endpt to be the specified string
        * \throws zmq::error_t as specified by the ZMQ C++ api
        * 
        * It is highly recommended you NEVER use a fragile conenction (persist = false).  Do so at your own risk
        * I take no responsibility if fragile connections cause you to be severely irradiated
        */
-      void connect(const char* endpt, const bool persist = true);
-      void connect(const std::string& endpt, const bool persist = true){connect(endpt.c_str(), persist);}
+      void connect(const std::string & endpt) {m_conn_endpts.push_back(endpt); curr_endpt = endpt;}
+      void connect(const char* endpt) {connect(std::string(endpt));}
+      
+      //void connect(const char* endpt, const bool persist = true);
+      //void connect(const std::string& endpt, const bool persist = true){connect(endpt.c_str(), persist);}
       ///@}
       ///@{
       /*!
-       * \brief binds the socket to the endpoint
+       * \brief adds an endpoint to the connection list
        * \pre None
-       * \post Binds a socket to the endpoint if needed (!persist and no connection to endpt previously)
+       * \post pushes endpt to the back of the binding list
+       * \post sets the current_endpt to be the specified string
        * \throws zmq::error_t as specified by the ZMQ C++ api
        * 
        * * It is highly recommended you NEVER use a fragile conenction (persist = false).  Do so at your own risk
        */
-      void bind(const char* endpt, const bool persist = true);
-      void bind(const std::string& endpt, const bool persist = true) {bind(endpt.c_str(), persist);}
+      void bind(const std::string & endpt) {m_bind_endpts.push_back(endpt); curr_endpt = endpt;}
+      void bind(const char* endpt) {bind(std::string(endpt));}
+      //void bind(const char* endpt, const bool persist = true);
+      //void bind(const std::string& endpt, const bool persist = true) {bind(endpt.c_str(), persist);}
       ///@}
       
       /*!
@@ -196,7 +221,7 @@ namespace zmqcpp
        * \pre None
        * \post the socket is removed from the cache and will be created on next connect()
        */
-      void disconnect() {m_conn.erase(curr_endpt);}
+      void disconnect() {m_conn.erase(m_conn_hash);}
       /* socket options */
       /*!
        * \brief sets a non-string sockopt (before connection)
@@ -215,6 +240,8 @@ namespace zmqcpp
   template <class T>
   bool Socket::send(const BaseMessage<T> & msg, const int opts)
   {
+    if (m_conn_endpts.size()) _conn();
+    else _bind();
     int count = 1;
     bool win = true;
     
@@ -248,6 +275,8 @@ namespace zmqcpp
   template <class T>
   bool Socket::recv(BaseMessage<T> & msg, const int opts)
   {
+    if (m_conn_endpts.size()) _conn();
+    else _bind();
     bool win = true;
     static zmq::message_t z_msg;
     msg.start_recv();
