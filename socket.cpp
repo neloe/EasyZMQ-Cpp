@@ -80,52 +80,7 @@ namespace zmqcpp
       ss << s;
     return std::hash<std::string>()(ss.str());
   }
-  /*
-  void Socket::_connect(const char* endpt, const bool persist)
-  {
-    std::string ep(endpt);
-    curr_endpt = ep;
-    m_optcache[endpt] = m_sockopts;
-    if (!persist)
-    {
-      m_sock = std::make_shared<zmq::socket_t>(zmq::socket_t(Context::get(), m_type));
-      for (auto opt: m_sockopts)
-      {
-	m_sock -> setsockopt(opt.first, opt.second.val.get(), opt.second.vsize);
-      }
-      m_sock->connect(endpt);
-    }
-    else
-    {
-      if (m_conn.count(ep) == 0)
-      {
-	m_conn[ep] = std::make_shared<zmq::socket_t>(zmq::socket_t(Context::get(), m_type));
-	m_conn[ep]->connect(endpt);
-      }
-      m_sock = m_conn[ep];
-    }
-  }
-  
-  void Socket::_bind(const char* endpt, const bool persist)
-  {
-    std::string ep(endpt);
-    curr_endpt = ep;
-    if (!persist)
-    {
-      m_sock = std::make_shared<zmq::socket_t>(zmq::socket_t(Context::get(), m_type));
-      m_sock->bind(endpt);
-    }
-    else
-    {
-      if (m_bind.count(ep) == 0)
-      {
-	m_bind[ep] = std::make_shared<zmq::socket_t>(zmq::socket_t(Context::get(), m_type));
-	m_bind[ep]->bind(endpt);
-      }
-      m_sock = m_bind[ep];
-    }
-  }
-  */
+
   zmq::socket_t& Socket::raw_sock()
   {
     if (!m_sock)

@@ -65,7 +65,6 @@ namespace zmqcpp
       std::shared_ptr<zmq::socket_t> m_sock;
       // Type of the socket
       int m_type;
-      bool m_connd, m_bound;
       std::string curr_endpt;
       
       static std::map<void*, std::shared_ptr<std::string>> m_unsent;
