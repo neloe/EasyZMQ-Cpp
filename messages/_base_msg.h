@@ -85,7 +85,24 @@ namespace zmqcpp
        */
       void add_frame(const std::string & s) {m_frames.push_back(std::shared_ptr<std::string>(new std::string(s)));}
       void add_frame(const char* bytes, const int size = -1) {add_frame(std::string(bytes, (size == -1?strlen(bytes) : size)));}
+      void append(const std::string & s) {add_frame(s);}
+      void append(const char* bytes, const int size = -1) {add_frame(bytes, size);}
+      void prepend(const std::string & s) {m_frames.push_front(std::shared_ptr<std::string>(new std::string(s)));}
+      void prepend(const char* bytes, const int size = -1) {prepend(std::string(bytes, (size == -1?strlen(bytes) : size)));}
       ///@}
+      
+      /*!
+       * \brief removes the message at the front of the list
+       * \pre None
+       * \post The frames list's front is popped
+       */
+      void pop_front() {if (m_frames.size()) m_frames.pop_front();}
+      /*!
+       * \brief removes the message at the front of the list
+       * \pre None
+       * \post The frames list's front is popped
+       */
+      void pop_back() {if (m_frames.size()) m_frames.pop_back();}
       /*!
        * \brief combination of two messages
        * \pre None
@@ -109,6 +126,13 @@ namespace zmqcpp
        * \returns Last message if >=1 frame, else empty string
        */
       std::string last() {return (m_frames.size())? *(m_frames.back()): "";}
+      /*!
+       * \brief returns the last string in the message list
+       * \pre None
+       * \post None
+       * \returns Last message if >=1 frame, else empty string
+       */
+      std::string first() {return (m_frames.size())? *(m_frames.front()): "";}
       
       /*!
        * \brief empties the frame list
