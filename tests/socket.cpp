@@ -39,112 +39,103 @@ const char CONN3[] = "tcp://localhost:5559";
   zmqcpp::Context c;
   zmqcpp::Socket send(ZMQ_REQ);
   zmqcpp::Socket recv(ZMQ_REP);
-  
+
   send.bind(BIND2);
   recv.connect(CONN2);
-  
+
   const std::string DATA = "Hi world!";
   std::string rep;
-  
+
   zmq::message_t msg(DATA.size());
   memcpy((void*) msg.data(), DATA.c_str(), DATA.size());
   send.raw_sock().send(msg);
-  
+
   zmq::message_t req;
   recv.raw_sock().recv(&req);
   rep = std::string((char*)req.data(), req.size());
-  
+
   ASSERT_EQ(DATA, rep);
-  
+
   req.rebuild(static_cast<int>(rep.size()));
   memcpy((void*)req.data(), rep.c_str(), rep.size());
   recv.raw_sock().send(req);
-  
+
   zmq::message_t final;
   send.raw_sock().recv(&final);
   std::string finstr((char*)final.data(), final.size());
-  
+
   ASSERT_EQ(DATA, finstr);
-  
+
 }*/
 
-TEST(SocketTest, CreateAndSend)
+TEST (SocketTest, CreateAndSend)
 {
-  zmqcpp::Socket send(ZMQ_REQ);
-  zmqcpp::Socket recv(ZMQ_REP);
-  
-  send.bind(BIND);
-  recv.connect(CONN);
-  send._bind();
-  recv._conn();
-  const std::string DATA = "Hi world!";
-  std::string rep;
-  
-  zmq::message_t msg(DATA.size());
-  memcpy((void*) msg.data(), DATA.c_str(), DATA.size());
-  send.raw_sock().send(msg);
-  
-  zmq::message_t req;
-  recv.raw_sock().recv(&req);
-  rep = std::string((char*)req.data(), req.size());
-  
-  ASSERT_EQ(DATA, rep);
-  
-  req.rebuild(static_cast<int>(rep.size()));
-  memcpy((void*)req.data(), rep.c_str(), rep.size());
-  recv.raw_sock().send(req);
-  
-  zmq::message_t final;
-  send.raw_sock().recv(&final);
-  std::string finstr((char*)final.data(), final.size());
-  
-  ASSERT_EQ(DATA, finstr);
-  
+    zmqcpp::Socket send (ZMQ_REQ);
+    zmqcpp::Socket recv (ZMQ_REP);
+    send.bind (BIND);
+    recv.connect (CONN);
+    send._bind();
+    recv._conn();
+    const std::string DATA = "Hi world!";
+    std::string rep;
+    zmq::message_t msg (DATA.size());
+    memcpy ((void *) msg.data(), DATA.c_str(), DATA.size());
+    send.raw_sock().send (msg);
+    zmq::message_t req;
+    recv.raw_sock().recv (&req);
+    rep = std::string ((char *)req.data(), req.size());
+    ASSERT_EQ (DATA, rep);
+    req.rebuild (static_cast<int> (rep.size()));
+    memcpy ((void *)req.data(), rep.c_str(), rep.size());
+    recv.raw_sock().send (req);
+    zmq::message_t final;
+    send.raw_sock().recv (&final);
+    std::string finstr ((char *)final.data(), final.size());
+    ASSERT_EQ (DATA, finstr);
 }
 
-TEST(SocketTest, NoEndPtThrow)
+TEST (SocketTest, NoEndPtThrow)
 {
-  zmqcpp::Socket a(ZMQ_STREAM);
-  ASSERT_THROW(a.raw_sock(), zmqcpp::no_endpt);
-  try
-  {
-    a.raw_sock();
-    FAIL();
-  }
-  catch (zmqcpp::no_endpt & e)
-  {
-    ASSERT_STREQ("Socket has no endpoint", e.what());
-  }
+    zmqcpp::Socket a (ZMQ_STREAM);
+    ASSERT_THROW (a.raw_sock(), zmqcpp::no_endpt);
+    try
+    {
+        a.raw_sock();
+        FAIL();
+    }
+    catch (zmqcpp::no_endpt &e)
+    {
+        ASSERT_STREQ ("Socket has no endpoint", e.what());
+    }
 }
 
-TEST(SocketTest, MultiConn)
+TEST (SocketTest, MultiConn)
 {
-  zmqcpp::Socket b1(ZMQ_REQ), b2(ZMQ_REQ);
-  zmqcpp::Socket s1(ZMQ_REP);
-  char data[10];
-  b1.bind(BIND2);
-  b1._bind();
-  b2.bind(BIND3);
-  b2._bind();
-  s1.connect(CONN2);
-  s1.connect(CONN3);
-  s1._conn();
-  b1.raw_sock().send("Hi1", 3, 0);
-  b2.raw_sock().send("Hi2", 3, 0);
-  s1.raw_sock().recv(data, 10, 0);
-  ASSERT_STREQ("Hi1", data);
-  s1.raw_sock().send("W1", 2, 0);
-  s1.raw_sock().recv(data, 10, 0);
-  ASSERT_STREQ("Hi2", data);
-  s1.raw_sock().send("W2", 2, 0);
-  for (int i=0; i<10; i++)
-    data[i] = 0;
-  b1.raw_sock().recv(data, 10, 0);
-  ASSERT_STREQ("W1", data);
-  for (int i=0; i<10; i++)
-    data[i] = 0;
-  b2.raw_sock().recv(data, 10, 0);
-  ASSERT_STREQ("W2", data);
-  
+    zmqcpp::Socket b1 (ZMQ_REQ), b2 (ZMQ_REQ);
+    zmqcpp::Socket s1 (ZMQ_REP);
+    char data[10];
+    b1.bind (BIND2);
+    b1._bind();
+    b2.bind (BIND3);
+    b2._bind();
+    s1.connect (CONN2);
+    s1.connect (CONN3);
+    s1._conn();
+    b1.raw_sock().send ("Hi1", 3, 0);
+    b2.raw_sock().send ("Hi2", 3, 0);
+    s1.raw_sock().recv (data, 10, 0);
+    ASSERT_STREQ ("Hi1", data);
+    s1.raw_sock().send ("W1", 2, 0);
+    s1.raw_sock().recv (data, 10, 0);
+    ASSERT_STREQ ("Hi2", data);
+    s1.raw_sock().send ("W2", 2, 0);
+    for (int i = 0; i < 10; i++)
+        data[i] = 0;
+    b1.raw_sock().recv (data, 10, 0);
+    ASSERT_STREQ ("W1", data);
+    for (int i = 0; i < 10; i++)
+        data[i] = 0;
+    b2.raw_sock().recv (data, 10, 0);
+    ASSERT_STREQ ("W2", data);
 }
 
