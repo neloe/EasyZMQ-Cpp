@@ -72,3 +72,5 @@ cout << rec.last() << endl; // prints "world" to the screen, does the same as ab
 ```
 This now works: `sendsock << zmqcpp::Message(4)`. 
 More complex message types can be created by inheriting from the base message type; these messages can handle special protocol messages, etc.
+
+NOTE: If you do anything involving the getsockopt function or raw_sock(), you must connect to all endpoints first and then call the _conn() member function to force socket creation.  While unfortunate, this allows pooling of connections to a set of endpoints.
