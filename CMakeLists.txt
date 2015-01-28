@@ -2,7 +2,7 @@ project(zmqcpp)
 cmake_minimum_required(VERSION 2.8)
 option(CodeCoverage "CodeCoverage" OFF)
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wno-deprecated-register ${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11 -Wno-deprecated-register -O0 --coverage ${CMAKE_CXX_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11 -Wno-deprecated-register -O0 -g ${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules/)
 
 set( zmqsrc

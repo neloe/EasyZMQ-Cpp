@@ -29,62 +29,62 @@
 
 namespace zmqcpp
 {
-std::shared_ptr<zmq::context_t> Context::m_ctx = nullptr;
-thread_local std::map<size_t, std::shared_ptr<zmq::socket_t>> Socket::m_conn;
-std::map<size_t, std::shared_ptr<zmq::socket_t>> Socket::m_bind;
-std::map<void *, std::shared_ptr<std::string>> Socket::m_unsent;
-std::map<std::string, std::map<int, sockopt>> Socket::m_optcache;
+    std::shared_ptr<zmq::context_t> Context::m_ctx = nullptr;
+    thread_local std::map<size_t, std::shared_ptr<zmq::socket_t>> Socket::m_conn;
+    std::map<size_t, std::shared_ptr<zmq::socket_t>> Socket::m_bind;
+    std::map<void *, std::shared_ptr<std::string>> Socket::m_unsent;
+    std::map<std::string, std::map<int, sockopt>> Socket::m_optcache;
 
-void Socket::_conn()
-{
-    static bool run = true;
-    if (run)
+    void Socket::_conn()
     {
-        m_conn_hash = hash_list (m_conn_endpts);
-        if (!m_conn.count (m_conn_hash))
+        static bool run = true;
+        if (run)
         {
-            m_conn[m_conn_hash] = std::make_shared<zmq::socket_t> (zmq::socket_t (Context::get(), m_type));
-            for (auto opt : m_sockopts)
-                m_conn[m_conn_hash] -> setsockopt (opt.first, opt.second.val.get(), opt.second.vsize);
-            for (const std::string &e : m_conn_endpts)
-                m_conn[m_conn_hash]->connect (e.c_str());
+            m_conn_hash = hash_list (m_conn_endpts);
+            if (!m_conn.count (m_conn_hash))
+            {
+                m_conn[m_conn_hash] = std::make_shared<zmq::socket_t> (zmq::socket_t (Context::get(), m_type));
+                for (auto opt : m_sockopts)
+                    m_conn[m_conn_hash] -> setsockopt (opt.first, opt.second.val.get(), opt.second.vsize);
+                for (const std::string &e : m_conn_endpts)
+                    m_conn[m_conn_hash]->connect (e.c_str());
+            }
+            m_sock = m_conn[m_conn_hash];
         }
-        m_sock = m_conn[m_conn_hash];
+        return;
     }
-    return;
-}
-void Socket::_bind()
-{
-    static bool run = true;
-    if (run)
+    void Socket::_bind()
     {
-        m_bind_hash = hash_list (m_bind_endpts);
-        if (!m_bind.count (m_bind_hash))
+        static bool run = true;
+        if (run)
         {
-            m_bind[m_bind_hash] = std::make_shared<zmq::socket_t> (zmq::socket_t (Context::get(), m_type));
-            for (auto opt : m_sockopts)
-                m_bind[m_bind_hash] -> setsockopt (opt.first, opt.second.val.get(), opt.second.vsize);
-            for (const std::string &e : m_bind_endpts)
-                m_bind[m_bind_hash]->bind (e.c_str());
+            m_bind_hash = hash_list (m_bind_endpts);
+            if (!m_bind.count (m_bind_hash))
+            {
+                m_bind[m_bind_hash] = std::make_shared<zmq::socket_t> (zmq::socket_t (Context::get(), m_type));
+                for (auto opt : m_sockopts)
+                    m_bind[m_bind_hash] -> setsockopt (opt.first, opt.second.val.get(), opt.second.vsize);
+                for (const std::string &e : m_bind_endpts)
+                    m_bind[m_bind_hash]->bind (e.c_str());
+            }
+            m_sock = m_bind[m_bind_hash];
         }
-        m_sock = m_bind[m_bind_hash];
+        return;
     }
-    return;
-}
 
-size_t Socket::hash_list (std::vector<std::string> &strvec)
-{
-    std::sort (strvec.begin(), strvec.end());
-    std::stringstream ss;
-    for (const std::string &s : strvec)
-        ss << s;
-    return std::hash<std::string>() (ss.str());
-}
+    size_t Socket::hash_list (std::vector<std::string> &strvec)
+    {
+        std::sort (strvec.begin(), strvec.end());
+        std::stringstream ss;
+        for (const std::string &s : strvec)
+            ss << s;
+        return std::hash<std::string>() (ss.str());
+    }
 
-zmq::socket_t &Socket::raw_sock()
-{
-    if (!m_sock)
-        throw no_endpt();
-    return *m_sock;
-}
+    zmq::socket_t &Socket::raw_sock()
+    {
+        if (!m_sock)
+            throw no_endpt();
+        return *m_sock;
+    }
 }
